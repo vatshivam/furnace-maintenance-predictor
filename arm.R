@@ -1,47 +1,40 @@
 # install.packages('arules')
 library(arules)
 library(stringr)
-df = read.csv('C:/Users/vatss/codes/furnace-maintenance-predictor/data/transactions_2.csv')
-data=read.transactions("C:/Users/vatss/codes/furnace-maintenance-predictor/data/transactions_2.csv",rm.duplicates=FALSE,format="basket",sep=",",cols=1)
+library(arulesViz)
+# df = read.csv('C:/Users/vatss/codes/furnace-maintenance-predictor/data/transactions_3.csv')
+data=read.transactions("C:/Users/vatss/codes/furnace-maintenance-predictor/data/transactions_3.csv",rm.duplicates=FALSE,format="basket",sep=",",cols=1)
 inspect(data)
 
-rules = apriori(data,parameter = list(support=0.10,confidence=0.00,minlen=0))
+
+
+rules = apriori(data,parameter = list(support=0.03,confidence=0.5,minlen=2))
 
 inspect(rules)
 
-# strings to search for
-a = "aluminium"
-b = "china"
+## Plot of which items are most frequent
+itemFrequencyPlot(data, topN=20, type="absolute")
 
-# counting the occurrences of character
-support_count_a =0 
-support_count_b =0
+## Sort rules by a measure such as conf, sup, or lift
+SortedRules <- sort(rules, by="lift", decreasing=TRUE)
+inspect(SortedRules)
+(summary(SortedRules))
 
-for(i in 1:nrow(df)){
 
-  if (a %in% unlist(strsplit(df[i, "transactions"],","))){
-    support_count_a = support_count_a+1
-  }
-  if (b %in% unlist(strsplit(df[i, "transactions"],","))){
-    support_count_b = support_count_b+1
-  }
-}
-  
-# counting occurrences of 2 strings (for confidence and lift)
-support_count_ab = 0
-for(i in 1:nrow(df)){
-  if ((a %in% unlist(strsplit(df[i, "transactions"],","))) &(b %in% unlist(strsplit(df[i, "transactions"],","))) ){
-    support_count_ab = support_count_ab+1
-  }
-}
+## Visualize
+## tcltk
 
-support_a = support_count_a/nrow(df)
-support_b = support_count_b/nrow(df)
+subrulesK <- head(sort(SortedRules, by="lift"),10)
+plot(subrulesK)
 
-support_ab = support_count_ab/nrow(df)
+plot(subrulesK, method="graph", engine="interactive")
 
-confidence = support_ab/support_a
+## Visualize
+## tcltk
 
-lift = support_ab/(support_a * support_b)
+subrules <- head(sort(SortedRules, by="lift"),15)
+plot(subrules)
 
-cat(support_a,confidence,lift)
+plot(subrules, method="graph", engine="interactive")
+plot(subrules, method="graph", engine="htmlwidget")
+
