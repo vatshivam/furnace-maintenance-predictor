@@ -1,4 +1,5 @@
 library(ggplot2)
+library(tidyverse)
 setwd('C:/Users/vatss/codes/furnace-maintenance-predictor')
 df = read_csv('data/transactions.csv')
 head(df)
